@@ -1,4 +1,4 @@
-import { extendType, nonNull, objectType, stringArg } from "nexus";
+import { extendType, intArg, nonNull, objectType, stringArg } from "nexus";
 import links from "./LinksDummyData";
 
 export const Link = objectType({
@@ -42,6 +42,22 @@ export const LinkMutation = extendType({
           url: url,
         };
         links.push(link);
+        return link;
+      },
+    });
+    t.nonNull.field("updateLink", {
+      type: "Link",
+      args: {
+        id: nonNull(intArg()),
+        url: nonNull(stringArg()),
+        description: nonNull(stringArg()),
+      },
+
+      resolve(parent, { id, url, description }, context) {
+        let index = id - 1;
+        let link = links[index];
+        link.description = description;
+        link.url = url;
         return link;
       },
     });
