@@ -1,10 +1,23 @@
-import { objectType } from "nexus";
+import { extendType, objectType } from "nexus";
+import links from "./LinksDummyData";
 
 export const Link = objectType({
   name: "Link",
   definition(t) {
     t.nonNull.int("id");
-    t.nonNull.string("dsecription");
+    t.nonNull.string("description");
     t.nonNull.string("url");
+  },
+});
+
+export const LinkQuery = extendType({
+  type: "Query",
+  definition(t) {
+    t.nonNull.list.nonNull.field("feed", {
+      type: "Link",
+      resolve(parent, args, context, info) {
+        return links;
+      },
+    });
   },
 });

@@ -3,11 +3,11 @@
 
 
 type Link {
-  dsecription: String!
+  description: String!
   id: Int!
   url: String!
 }
 
 type Query {
-  ok: Boolean!
+  feed: [Link!]!
 }
