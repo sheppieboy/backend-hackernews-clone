@@ -1,16 +1,20 @@
-import { extendType, intArg, nonNull, objectType, stringArg } from "nexus";
-import links from "./LinksDummyData";
+import { objectType, extendType, nonNull, stringArg } from "nexus";
 
 export const Link = objectType({
-  name: "Link",
+  name: "Link", // 1
   definition(t) {
-    t.nonNull.int("id");
-    t.nonNull.string("description");
-    t.nonNull.string("url");
+    // 2
+    t.nonNull.int("id"); // 3
+    t.nonNull.string("description"); // 4
+    t.nonNull.string("url"); // 5
     t.field("postedBy", {
+      // 1
       type: "User",
-      resolve(parent, args, { prisma }) {
-        return prisma.link.findUnique({ where: { id: parent.id } }).postedBy();
+      resolve(parent, args, context) {
+        // 2
+        return context.prisma.link
+          .findUnique({ where: { id: parent.id } })
+          .postedBy();
       },
     });
   },
@@ -21,8 +25,8 @@ export const LinkQuery = extendType({
   definition(t) {
     t.nonNull.list.nonNull.field("feed", {
       type: "Link",
-      resolve(parent, args, { prisma }, info) {
-        return prisma.link.findMany();
+      resolve(parent, args, context) {
+        return context.prisma.link.findMany(); // 1
       },
     });
   },
@@ -37,15 +41,14 @@ export const LinkMutation = extendType({
         description: nonNull(stringArg()),
         url: nonNull(stringArg()),
       },
-
-      resolve(parent, { description, url }, { prisma }, info) {
-        const newLink = prisma.link.create({
+      resolve(parent, args, context) {
+        const newLink = context.prisma.link.create({
+          // 2
           data: {
-            description,
-            url,
+            description: args.description,
+            url: args.url,
           },
         });
-
         return newLink;
       },
     });
