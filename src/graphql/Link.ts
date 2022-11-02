@@ -15,8 +15,8 @@ export const LinkQuery = extendType({
   definition(t) {
     t.nonNull.list.nonNull.field("feed", {
       type: "Link",
-      resolve(parent, args, context, info) {
-        return links;
+      resolve(parent, args, { prisma }, info) {
+        return prisma.link.findMany();
       },
     });
   },
@@ -32,33 +32,15 @@ export const LinkMutation = extendType({
         url: nonNull(stringArg()),
       },
 
-      resolve(parent, args, context) {
-        const { description, url } = args;
-        let idCount = links.length + 1;
+      resolve(parent, { description, url }, { prisma }, info) {
+        const newLink = prisma.link.create({
+          data: {
+            description,
+            url,
+          },
+        });
 
-        const link = {
-          id: idCount,
-          description: description,
-          url: url,
-        };
-        links.push(link);
-        return link;
-      },
-    });
-    t.nonNull.field("updateLink", {
-      type: "Link",
-      args: {
-        id: nonNull(intArg()),
-        url: nonNull(stringArg()),
-        description: nonNull(stringArg()),
-      },
-
-      resolve(parent, { id, url, description }, context) {
-        let index = id - 1;
-        let link = links[index];
-        link.description = description;
-        link.url = url;
-        return link;
+        return newLink;
       },
     });
   },
